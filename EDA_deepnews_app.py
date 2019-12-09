@@ -10,8 +10,7 @@ sns.set(style="whitegrid")
 
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
-digest_topics = pd.read_csv("Digest topic.csv",error_bad_lines=False)
-digest_topics = digest_topics.replace('Economy','Business')
+digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
 
 #là on crée le titre de la page
 st.title("Exploration des métriques de la newsletter")
@@ -100,7 +99,6 @@ else :
 
 
 #on intègre les thèmes dans notre jeu de données
-
 dateDigest = digest_final["Send Date"]
 digest_final = digest_final.reset_index(drop = True)
 digest_final = digest_final.drop([0,1,2,3])
@@ -381,7 +379,7 @@ if st.checkbox("Voir l'engagement moyen des abonnés en fonction de la newslette
 
 st.subheader("Représentation des clics utilisateurs en fonction du thème de la newsletter")
 
-theme = pd.read_csv('Digest topic.csv')
+theme = pd.read_csv('Digest Topic.csv')
 theme.rename(columns={'Digest number':'digest'}, inplace=True)
 cliks = pd.read_csv('User_Clicks_Digest.csv')
 clicks_theme = pd.merge(cliks, theme, how = 'right',  on='digest' )
