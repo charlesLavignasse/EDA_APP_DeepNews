@@ -11,6 +11,7 @@ sns.set(style="whitegrid")
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
 digest_topics = pd.read_csv("Digest topic.csv",error_bad_lines=False)
+digest_topics = digest_topics.replace('Economy','Business')
 
 #là on crée le titre de la page
 st.title("Exploration des métriques de la newsletter")
@@ -29,7 +30,10 @@ digest_final['Click Rate']=digest_final['Click Rate'].apply(mylambda)
 digest_final['Open Rate']=digest_final['Open Rate'].apply(mylambda)
 digest_final['Open Rate']=digest_final['Open Rate'].astype('float64')
 digest_final['Click Rate']=digest_final['Click Rate'].astype('float64')
+
+
 dateDigest = digest_final["Send Date"]
+
 
 
 if st.checkbox('voir le dataset des métriques'):
@@ -96,7 +100,7 @@ else :
 
 
 #on intègre les thèmes dans notre jeu de données
-topic=pd.read_csv("Digest Topic.csv", encoding = 'UTF-8')
+
 dateDigest = digest_final["Send Date"]
 digest_final = digest_final.reset_index(drop = True)
 digest_final = digest_final.drop([0,1,2,3])
