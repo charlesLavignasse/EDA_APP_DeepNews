@@ -11,7 +11,7 @@ sns.set(style="whitegrid")
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
 digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
-
+digest_topics = digest_topics.replace("Economy", 'Business')
 #là on crée le titre de la page
 st.title("Exploration des métriques de la newsletter")
 
@@ -106,7 +106,6 @@ digest_final = digest_final.reset_index(drop= True)
 
 digest2=pd.concat([digest_final,digest_topics],axis = 1)
 digest_theme=digest2
-digest_theme.Thème.replace('Economy',"Business", inplace = True )
 theme = digest_theme["Thème"]
 
 if st.checkbox("voir les différents thèmes"):
