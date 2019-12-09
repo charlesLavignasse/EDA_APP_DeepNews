@@ -377,7 +377,7 @@ if st.checkbox("Voir l'engagement moyen des abonnés en fonction de la newslette
 
 st.subheader("Représentation des clics utilisateurs en fonction du thème de la newsletter")
 
-theme = pd.read_csv('Digest topic.csv')
+theme = pd.read_csv('Digest Topic.csv')
 theme.rename(columns={'Digest number':'digest'}, inplace=True)
 cliks = pd.read_csv('User_Clicks_Digest.csv')
 clicks_theme = pd.merge(cliks, theme, how = 'right',  on='digest' )
