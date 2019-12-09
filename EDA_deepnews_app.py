@@ -10,7 +10,7 @@ sns.set(style="whitegrid")
 
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
-digest_topics = pd.read_csv("Digest topic.csv",error_bad_lines=False)
+digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
 
 #là on crée le titre de la page
 st.title("Exploration des métriques de la newsletter")
