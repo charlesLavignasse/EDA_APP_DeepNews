@@ -36,7 +36,7 @@ dateDigest = digest_final["Send Date"]
 
 
 if st.checkbox('voir le dataset des métriques'):
-    nombre_lignes_a_visualiser = st.number_input("Nombre de lignes à visualiser")
+    nombre_lignes_a_visualiser = st.slider("Nombre de lignes à visualiser",0,15,5)
     st.write(digest_final.head(nombre_lignes_a_visualiser))
 
 #on enlève les données inutiles
@@ -47,7 +47,7 @@ digest.drop([186,191,200,210], inplace = True)
 
 def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     fig, axes = plt.subplots(figsize = (15,8))
-    sns.lineplot(x = dateDigest, y = Parameter_name, data = dataset, linewidth=4, c='orangered')
+    sns.lineplot(x = dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
     plt.tick_params(axis='both', which='major', labelsize=17)
     plt.tick_params(axis='both', which='minor', labelsize=17)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
@@ -62,7 +62,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
 
 def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     fig, axes = plt.subplots(figsize = (15,8))
-    ax = sns.lineplot(x= dateDigest, y = Parameter_name, data = dataset, linewidth=4, c='orangered')
+    ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
     plt.ylim(0,100)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
@@ -79,20 +79,20 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
 
 
 #On crée la selectbox pour les métriques
-metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Recipients","Open Rates", 'Click Rate', 'Total Bounces'))
+metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'Taux de clics', 'Total non-délivrés'))
 
-if metrique_temps == "Recipients":
+if metrique_temps == "Destinataires":
     #on représente le nombre de receveurs en fonction du temps
-    plot_totalR = LinePlotTime('Total Recipients', 'Nombre de destinataires', digest_final,"Evolution du nombre de destinataires en fonction du temps")
+    plot_totalR = LinePlotTime('Total Recipients','Nombre de destinataires', digest_final,"Evolution du nombre de destinataires en fonction du temps")
     st.write("Evolution du nombre de destinataires recevant la newsletter")
     st.pyplot(plot_totalR)
 
-elif metrique_temps == 'Open Rates':
+elif metrique_temps == "Taux d'ouverture":
     plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps" )
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
-elif metrique_temps == 'Click Rate':
+elif metrique_temps == 'Taux de clics':
     plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps")
     st.write("Evolution du taux de clics en fonction du temps")
     st.pyplot(plot_clicR)
@@ -131,23 +131,20 @@ def barplots(parameter, Parameter_name, title_name):
 
 #st.write(digest_theme)
 st.subheader("Représentation des métriques en fonction du thème de la newsletter")
-barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Open Rate", "Click Rate", "Unique Clicks","Total Recipients"))
-if barTheme == 'Open Rate':
-    barplot_openR = barplots('Open Rate', 'Open Rate', "Taux d'ouverture en fonction du thème")
+barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Taux d'ouverture", "Taux de clics", "Clics uniques"))
+if barTheme == "Taux d'ouverture":
+    barplot_openR = barplots('Open Rate', "Taux d'ouverture", "Taux d'ouverture en fonction du thème")
     st.write("Taux d'ouverture en fonction du thème")
     st.pyplot(barplot_openR)
-elif barTheme == 'Click Rate':
-    barplot_ClickR = barplots('Click Rate', 'Click Rate', 'Taux de clics en fonction du thème')
+elif barTheme == "Taux de clics":
+    barplot_ClickR = barplots('Click Rate', "Taux de clics", 'Taux de clics en fonction du thème')
     st.write("Taux de clics en fonction du thème")
     st.pyplot(barplot_ClickR)
-elif barTheme == "Unique Clicks":
-    barplot_UClick = barplots("Unique Clicks", "Unique Clicks", 'Taux de clics uniques en fonction du thème')
+else :
+    barplot_UClick = barplots("Unique Clicks", "Clics uniques", 'Taux de clics uniques en fonction du thème')
     st.write("Taux de clics en fonction du thème")
     st.pyplot(barplot_UClick)
-else :
-    barplot_totalR = barplots('Total Recipients', 'Total Recipients', 'Destinaires en fonction du thème')
-    st.write("Destinataires en fonction du thème")
-    st.pyplot(barplot_totalR)
+
 
 
 st.subheader("Représentation des désinscriptions en fonction du thème et de la newsletter")
@@ -192,11 +189,11 @@ def doubleLinePlot():
     New_sub = sns.lineplot(x = digest_theme['Send Date'], y = digest_theme['New Subscribers'],  ax = axes[0])
     Unsub = sns.lineplot(x = digest_theme   ['Send Date'], y = digest_theme['Unsubscribes'] , ax = axes[1])
 
-    New_sub.set_xlabel("Send Date",fontsize=18)
-    Unsub.set_xlabel("Send Date",fontsize=18)
+    New_sub.set_xlabel("Date",fontsize=18)
+    Unsub.set_xlabel("Date",fontsize=18)
 
-    New_sub.set_ylabel("New subscribers",fontsize=20)
-    Unsub.set_ylabel("Unsubscribers",fontsize=20)
+    New_sub.set_ylabel("Nouveaux abonnés",fontsize=20)
+    Unsub.set_ylabel("Désabonnés",fontsize=20)
 
     New_sub.tick_params(labelsize=15)
     Unsub.tick_params(labelsize=15)
@@ -249,7 +246,7 @@ if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
         ax.legend(ncol=1, loc="center right", frameon=True, fontsize=16, shadow=2)
         ax.set_xlabel("Nombre de clics")
         sns.despine(left=True, bottom=True)
-        plt.title("Nombre de clics (moyen, total) >= 50 par publisher", fontdict={'fontsize': 18})
+        plt.title("Nombre de clics (moyen, total) par publisher", fontdict={'fontsize': 18})
         plt.tight_layout()
 
     st.pyplot(clicsEdi = clics_editeurs())
