@@ -50,9 +50,11 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     sns.lineplot(x = dateDigest, y = Parameter_name, data = dataset, linewidth=4, c='orangered')
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
-
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    axes.set_xticklabels(x_label_list)
     plt.xlabel("Date d'envoi",fontsize=20)
     plt.ylabel(Parameter_name,fontsize=20)
+    plt.xlim(xmin=("2019-06-15"))
     plt.xticks(rotation=30)
     plt.title(title_name, fontsize=25)
     plt.show()
@@ -64,6 +66,9 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     plt.ylim(0,100)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    axes.set_xticklabels(x_label_list)
+    plt.xlim(xmin=("2019-06-15"))
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
     plt.xlabel("Date d'envoi",fontsize=20)
@@ -118,6 +123,8 @@ def barplots(parameter, Parameter_name, title_name):
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
     plt.xlabel("Thème",fontsize=20)
+    x_label_list = ['Politique', 'Tech', 'Réseau social', 'Santé', 'Affaires', 'Relations' + '\n'+ "Internationales"]
+    ax.set_xticklabels(x_label_list)
     plt.ylabel(Parameter_name,fontsize=20)
     plt.xticks(rotation=0)
     plt.title(title_name, fontsize=25)
@@ -130,12 +137,12 @@ if barTheme == 'Open Rate':
     st.write("Taux d'ouverture en fonction du thème")
     st.pyplot(barplot_openR)
 elif barTheme == 'Click Rate':
-    barplot_ClickR = barplots('Click Rate', 'Click Rate', 'Taux de cliks en fonction du thème')
-    st.write("Taux de cliks en fonction du thème")
+    barplot_ClickR = barplots('Click Rate', 'Click Rate', 'Taux de clics en fonction du thème')
+    st.write("Taux de clics en fonction du thème")
     st.pyplot(barplot_ClickR)
 elif barTheme == "Unique Clicks":
-    barplot_UClick = barplots("Unique Clicks", "Unique Clicks", 'Taux de cliks uniques en fonction du thème')
-    st.write("Taux de cliks en fonction du thème")
+    barplot_UClick = barplots("Unique Clicks", "Unique Clicks", 'Taux de clics uniques en fonction du thème')
+    st.write("Taux de clics en fonction du thème")
     st.pyplot(barplot_UClick)
 else :
     barplot_totalR = barplots('Total Recipients', 'Total Recipients', 'Destinaires en fonction du thème')
@@ -286,8 +293,8 @@ if st.checkbox("Voir la table des abonnés de la MondayNote"):
 
 st.write("Quelle est la proportion d'abonnés inscrits sur les deux newsletter ?")
 
-Percentage_monday_users = monday_users.groupby(deep_users['MEMBER_RATING']).size()/len(deep_users['MEMBER_RATING'])*100
-Rating_proportion_monday_users = pd.DataFrame({"Percentage": Percentage_deep_users})
+Percentage_monday_users = monday_users.groupby(monday_users['MEMBER_RATING']).size()/len(monday_users['MEMBER_RATING'])*100
+Rating_proportion_monday_users = pd.DataFrame({"Percentage": Percentage_monday_users})
 Rating_proportion_monday_users.drop([1.0], inplace=True)
 
 
@@ -380,8 +387,8 @@ st.subheader("Représentation des clics utilisateurs en fonction du thème de la
 
 theme = pd.read_csv('Digest Topic.csv')
 theme.rename(columns={'Digest number':'digest'}, inplace=True)
-cliks = pd.read_csv('User_Clicks_Digest.csv')
-clicks_theme = pd.merge(cliks, theme, how = 'right',  on='digest' )
+clics = pd.read_csv('User_Clicks_Digest.csv')
+clicks_theme = pd.merge(clics, theme, how = 'right',  on='digest' )
 clicks_theme= clicks_theme[["EUID",'Thème',"Clicks"]]
 clicks_theme_grouped = clicks_theme.groupby(by = ['EUID','Thème']).sum().sort_values('Clicks', ascending = False).reset_index()
 
