@@ -48,8 +48,8 @@ digest.drop([186,191,200,210], inplace = True)
 def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     fig, axes = plt.subplots(figsize = (15,8))
     sns.lineplot(x = dateDigest, y = Parameter_name, data = dataset, linewidth=4, c='orangered')
-    plt.tick_params(axis='both', which='major', labelsize=18)
-    plt.tick_params(axis='both', which='minor', labelsize=18)
+    plt.tick_params(axis='both', which='major', labelsize=17)
+    plt.tick_params(axis='both', which='minor', labelsize=17)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
     axes.set_xticklabels(x_label_list)
     plt.xlabel("Date d'envoi",fontsize=20)
@@ -69,8 +69,8 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
     axes.set_xticklabels(x_label_list)
     plt.xlim(xmin=("2019-06-15"))
-    plt.tick_params(axis='both', which='major', labelsize=18)
-    plt.tick_params(axis='both', which='minor', labelsize=18)
+    plt.tick_params(axis='both', which='major', labelsize=17)
+    plt.tick_params(axis='both', which='minor', labelsize=17)
     plt.xlabel("Date d'envoi",fontsize=20)
     plt.ylabel(Parameter_name,fontsize=20)
     plt.xticks(rotation=30)
@@ -83,21 +83,21 @@ metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Recipien
 
 if metrique_temps == "Recipients":
     #on représente le nombre de receveurs en fonction du temps
-    plot_totalR = LinePlotTime('Total Recipients', 'Total Recipients', digest_final,"Evolution du nombre de destinataires en fonction du temps")
+    plot_totalR = LinePlotTime('Total Recipients', 'Nombre de destinataires', digest_final,"Evolution du nombre de destinataires en fonction du temps")
     st.write("Evolution du nombre de destinataires recevant la newsletter")
     st.pyplot(plot_totalR)
 
 elif metrique_temps == 'Open Rates':
-    plot_OpenR = LinePlotTimePercent('Open Rate', 'Open Rate', digest_final,"Evolution du taux d'ouverture en fonction du temps" )
+    plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps" )
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
 elif metrique_temps == 'Click Rate':
-    plot_clicR = LinePlotTimePercent('Click Rate','Click Rate', digest_final,"Evolution du taux de clics en fonction du temps")
+    plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps")
     st.write("Evolution du taux de clics en fonction du temps")
     st.pyplot(plot_clicR)
 else :
-    plot_totalBoun = LinePlotTime('Total Bounces', 'Total Bounces', digest_final, "Evolution du nombre de mail non délivrés au cours du temps")
+    plot_totalBoun = LinePlotTime('Total Bounces', 'Non délivrés', digest_final, "Evolution du nombre de mails non délivrés au cours du temps")
     st.write("Evolution du nombre de mail non délivrés au cours du temps")
     st.pyplot(plot_totalBoun)
 
@@ -119,7 +119,7 @@ if st.checkbox("voir les différents thèmes"):
 
 def barplots(parameter, Parameter_name, title_name):
     fig, ax = plt.subplots(figsize = (20, 7))
-    sns.barplot(x = theme, y = parameter, data =    digest_theme )
+    sns.barplot(x = theme, y = parameter, data = digest_theme )
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
     plt.xlabel("Thème",fontsize=20)
