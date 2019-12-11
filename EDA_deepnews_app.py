@@ -237,6 +237,7 @@ def doubleLinePlot():
 doubleplot = doubleLinePlot()
 if st.checkbox("voir le double plot"):
     st.pyplot(doubleplot)
+    sns.reset_orig
 
 st.title("III Analyse des répartitions de clics")
 st.header('Représentation des éditeurs en fonction de leur catégorie')
