@@ -13,7 +13,7 @@ campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
 digest_topics = digest_topics.replace("Economy", 'Business')
 #là on crée le titre de la page
-st.title("Exploration des métriques de la newsletter")
+st.title("I Exploration des métriques")
 
 #On selectionne dans notre dataset les données qui nous interessent
 digest = campaigns[campaigns['List']== 'Deepnews Digest']
@@ -77,9 +77,33 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     plt.title(title_name, fontsize=25)
 
 
+digest["Reactivity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
+def reactivity_plot():
+    fig, ax = plt.subplots(figsize = (15,8))
+    ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700')
+    ax.legend(fontsize=18)
+    plt.ylim(0,40)
+    plt.tick_params(axis='both', which='major', labelsize=18)
+    plt.tick_params(axis='both', which='minor', labelsize=18)
+    formatter0 = EngFormatter(unit='%')
+    ax.yaxis.set_major_formatter(formatter0)
+    plt.xlabel("Date d'envoi",fontsize=20)
+    plt.ylabel('Taux de réactivité',fontsize=20)
+    plt.xticks(rotation=0)
+    plt.title("Evolution du taux de réactivité", fontsize=27)
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    ax.set_xticklabels(x_label_list)
+
+    plt.xlim(xmin=("2019-06-15"))
+
+    plt.tight_layout()
+    #pour le chargement des graphiques sur l'ordinateur
+    # plt.savefig("click_rate.png")
+    # files.download("click_rate.png")
+    plt.show()
 
 #On crée la selectbox pour les métriques
-metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'Taux de clics', 'Total non-délivrés'))
+metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'Taux de clics', 'Total non-délivrés','Taux de réactivité'))
 
 if metrique_temps == "Destinataires":
     #on représente le nombre de receveurs en fonction du temps
@@ -96,6 +120,11 @@ elif metrique_temps == 'Taux de clics':
     plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps")
     st.write("Evolution du taux de clics en fonction du temps")
     st.pyplot(plot_clicR)
+elif metrique_temps == 'Taux de réactivité':
+    reactivity_plot = reactivity_plot()
+    st.write("Evolution du taux de réactivité")
+    st.pyplot(reactivity_plot)
+
 else :
     plot_totalBoun = LinePlotTime('Total Bounces', 'Non délivrés', digest_final, "Evolution du nombre de mails non délivrés au cours du temps")
     st.write("Evolution du nombre de mail non délivrés au cours du temps")
@@ -113,8 +142,7 @@ digest2=pd.concat([digest_final,digest_topics],axis = 1)
 digest_theme=digest2
 theme = digest_theme["Thème"]
 
-if st.checkbox("voir les différents thèmes"):
-    st.write(pd.DataFrame(digest_theme["Thème"].value_counts()))
+
 
 
 def barplots(parameter, Parameter_name, title_name):
@@ -129,8 +157,12 @@ def barplots(parameter, Parameter_name, title_name):
     plt.xticks(rotation=0)
     plt.title(title_name, fontsize=25)
 
+st.title("II Métriques en fonction des thèmes")
+if st.checkbox("voir les différents thèmes"):
+    st.write(pd.DataFrame(digest_theme["Thème"].value_counts()))
+
 #st.write(digest_theme)
-st.subheader("Représentation des métriques en fonction du thème de la newsletter")
+st.header("Représentation des métriques en fonction du thème de la newsletter")
 barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Taux d'ouverture", "Taux de clics", "Clics uniques"))
 if barTheme == "Taux d'ouverture":
     barplot_openR = barplots('Open Rate', "Taux d'ouverture", "Taux d'ouverture en fonction du thème")
@@ -147,7 +179,7 @@ else :
 
 
 
-st.subheader("Représentation des désinscriptions en fonction du thème et de la newsletter")
+st.header("Représentation des désinscriptions en fonction du thème et de la newsletter")
 
 def scatterthing(x, y, hue,xlabel,ylabel, title):
     fig, ax = plt.subplots(figsize=(20,10))
@@ -169,27 +201,8 @@ scat_Uns = scatterthing(digest_theme["Unsubscribes"],digest_theme['Title'],diges
 if st.checkbox("voir le scatterplot"):
     st.pyplot(scat_Uns)
 
-st.subheader('Représentation des éditeurs en fonction de leur catégorie')
-category = pd.read_csv("publishers_list.csv", sep = ";")
-publisher = pd.read_csv("publisher.csv")
-publisher = publisher.drop(columns=['Unnamed: 0', 'url'])
-publisher_group = publisher.groupby(by = "publisher").sum().sort_values(by = 'total_clicks', ascending = False).reset_index()
-publisher_category = pd.merge(publisher_group, category, on = "publisher")
-if st.checkbox('Voir le graphe : '):
-    nombre_publisher_slider = st.slider("Choisir le nombre d'éditeurs à visualiser :", 0,100,20)
-    def publi_cat():
-        fig, ax = plt.subplots(figsize= (15, 5))
-        sns.barplot(x = 'total_clicks', y = "publisher", data = publisher_category.head(nombre_publisher_slider),hue='category', dodge = False)
-        plt.xticks(fontsize=19)
-        plt.yticks(fontsize=17)
-        plt.xlabel("Nombre de clics total", fontsize=24)
-        plt.ylabel("Editeur", fontsize=26)
-        plt.title("Nombre total de clics par editeur", fontsize=28)
-        plt.show()
-    publisher_car_plot = publi_cat()
-    st.pyplot(publisher_car_plot)
 
-st.subheader("Visualisations des subscribers")
+st.header("Visualisations des subscribers")
 digest_theme['New Subscribers'] = 0
 for i in digest_theme.index:
   if i == 0:
@@ -225,7 +238,33 @@ doubleplot = doubleLinePlot()
 if st.checkbox("voir le double plot"):
     st.pyplot(doubleplot)
 
-st.subheader("Clics par éditeurs")
+st.title("III Analyse des répartitions de clics")
+st.header('Représentation des éditeurs en fonction de leur catégorie')
+category = pd.read_csv("publishers_list.csv", sep = ";")
+publisher = pd.read_csv("publisher.csv")
+publisher = publisher.drop(columns=['Unnamed: 0', 'url'])
+publisher_group = publisher.groupby(by = "publisher").sum().sort_values(by = 'total_clicks', ascending = False).reset_index()
+publisher_category = pd.merge(publisher_group, category, on = "publisher")
+if st.checkbox('Voir le graphe : '):
+    nombre_publisher_slider = st.slider("Choisir le nombre d'éditeurs à visualiser :", 0,100,20)
+    def publi_cat():
+        fig, ax = plt.subplots(figsize= (15, 5))
+        sns.barplot(x = 'total_clicks', y = "publisher", data = publisher_category.head(nombre_publisher_slider),hue='category', dodge = False)
+        plt.xticks(fontsize=19)
+        plt.yticks(fontsize=17)
+        plt.xlabel("Nombre de clics total", fontsize=24)
+        plt.ylabel("Editeur", fontsize=26)
+        plt.title("Nombre total de clics par editeur", fontsize=28)
+        plt.show()
+    publisher_car_plot = publi_cat()
+    st.pyplot(publisher_car_plot)
+
+
+
+    if st.checkbox("Voir les commentaires"):
+        st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
+        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")
+st.header("Clics par éditeurs")
 pub_df = pd.read_csv("reports_data.csv")
 pub_grp_sr = pub_df.groupby(["publisher"])
 
@@ -259,16 +298,36 @@ if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
         ax.legend(ncol=1, loc="center right", frameon=True, fontsize=16, shadow=2)
         ax.set_xlabel("Nombre de clics")
         sns.despine(left=True, bottom=True)
-        plt.title("Nombre de clics (moyen, total) par publisher", fontdict={'fontsize': 18})
+        plt.title("Nombre de clics (moyen, total) par éditeur", fontdict={'fontsize': 18})
         plt.tight_layout()
-
     st.pyplot(clicsEdi = clics_editeurs())
-    if st.checkbox("Voir les commentaires"):
-        st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
-        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")
 
+
+st.header("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
+classement = pd.read_csv("rank_data.csv")
+classement_groupe = classement.groupby(by = 'Ranking')
+clasement_groupe_data = pd.DataFrame(classement_groupe['Unique_clicks'].sum().sort_values(ascending=False))
+
+if st.checkbox("Voir le graphe des rangs:"):
+    def rank_graphe():
+        plt.figure(figsize=(14, 10))
+        ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h')
+        # ax.tick_params(axis='y', which='major', pad=20,length=20)
+        plt.xticks(fontsize=19)
+        plt.yticks(fontsize=17)
+        plt.xlabel("Nombre de clics uniques", fontsize=24)
+        plt.ylabel("Positionnement dans la Newsletter", fontsize=26)
+        plt.title("Nombre total de clics uniques par position dans la newsletter", fontsize=28)
+        # plt.tight_layout()
+        # plt.savefig("nb_clics_rank_v3.png", dpi=200)
+        plt.show()
+    graphe_rank = rank_graphe()
+    st.pyplot(graphe_rank)
 #on travail maintenant sur les abonnés
-st.subheader("Analyses des abonnés aux newsletter")
+
+st.title("IV Analyse de l'audience")
+
+st.header("Analyses des abonnés aux newsletter")
 st.write('abonnés DeepNews')
 
 deep_users = pd.read_csv("deep_users.csv")
@@ -393,7 +452,7 @@ if st.checkbox("Voir l'engagement moyen des abonnés en fonction de la newslette
     if st.checkbox('voir commentaires'):
         st.write("L'engaement moyen est plus important pour DeepNews que pour la mondaynote")
 
-st.subheader("Représentation des clics utilisateurs en fonction du thème de la newsletter")
+st.header("Représentation des clics utilisateurs en fonction du thème de la newsletter")
 
 theme = pd.read_csv('Digest Topic.csv')
 theme.rename(columns={'Digest number':'digest'}, inplace=True)
@@ -416,24 +475,3 @@ def clics_par_theme():
 
 clics_theme_uti = clics_par_theme()
 st.pyplot(clics_theme_uti)
-
-
-st.subheader("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
-classement = pd.read_csv("rank_data.csv")
-classement_groupe = classement.groupby(by = 'Ranking')
-clasement_groupe_data = pd.DataFrame(classement_groupe['Unique_clicks'].sum().sort_values(ascending=False))
-if st.checkbox("Voir le graphe:"):
-    def rank_graphe():
-        plt.figure(figsize=(14, 10))
-        ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h')
-        # ax.tick_params(axis='y', which='major', pad=20,length=20)
-        plt.xticks(fontsize=19)
-        plt.yticks(fontsize=17)
-        plt.xlabel("Nombre de clics uniques", fontsize=24)
-        plt.ylabel("Positionnement dans la Newsletter", fontsize=26)
-        plt.title("Nombre total de clics uniques par position dans la newsletter", fontsize=28)
-        # plt.tight_layout()
-        # plt.savefig("nb_clics_rank_v3.png", dpi=200)
-        plt.show()
-    graphe_rank = rank_graphe()
-    st.pyplot(graphe_rank)
