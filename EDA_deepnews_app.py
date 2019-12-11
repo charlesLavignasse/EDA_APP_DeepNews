@@ -50,7 +50,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     sns.lineplot(x = dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
     plt.tick_params(axis='both', which='major', labelsize=17)
     plt.tick_params(axis='both', which='minor', labelsize=17)
-    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
     axes.set_xticklabels(x_label_list)
     plt.xlabel("Date d'envoi",fontsize=20)
     plt.ylabel(Parameter_name,fontsize=20)
@@ -66,7 +66,7 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     plt.ylim(0,100)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
-    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
     axes.set_xticklabels(x_label_list)
     plt.xlim(xmin=("2019-06-15"))
     plt.tick_params(axis='both', which='major', labelsize=17)
@@ -91,7 +91,7 @@ def reactivity_plot():
     plt.ylabel('Taux de réactivité',fontsize=20)
     plt.xticks(rotation=0)
     plt.title("Evolution du taux de réactivité", fontsize=27)
-    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre']
+    x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
     ax.set_xticklabels(x_label_list)
 
     plt.xlim(xmin=("2019-06-15"))
@@ -302,7 +302,7 @@ if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
     st.pyplot(clicsEdi = clics_editeurs())
     if st.checkbox("Voir les commentaires"):
         st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
-        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")    
+        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")
 
 st.header("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
 classement = pd.read_csv("rank_data.csv")
