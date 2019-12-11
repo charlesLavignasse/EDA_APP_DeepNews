@@ -262,9 +262,7 @@ if st.checkbox('Voir le graphe : '):
 
 
 
-    if st.checkbox("Voir les commentaires"):
-        st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
-        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")
+
 st.header("Clics par éditeurs")
 pub_df = pd.read_csv("reports_data.csv")
 pub_grp_sr = pub_df.groupby(["publisher"])
@@ -302,7 +300,9 @@ if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
         plt.title("Nombre de clics (moyen, total) par éditeur", fontdict={'fontsize': 18})
         plt.tight_layout()
     st.pyplot(clicsEdi = clics_editeurs())
-
+    if st.checkbox("Voir les commentaires"):
+        st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
+        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")    
 
 st.header("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
 classement = pd.read_csv("rank_data.csv")
