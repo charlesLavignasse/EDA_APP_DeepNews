@@ -65,7 +65,7 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus
     fig, axes = plt.subplots(figsize = (15,8))
     ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
     ax1=sns.lineplot(x='Send Date', y=moy_indus, data=digest, linewidth=2.5, c='navy', label="Moyenne de l'industrie")
-
+    ax.lines[1].set_linestyle("--")
     plt.ylim(ymin,ymax)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
@@ -117,7 +117,7 @@ if metrique_temps == "Destinataires":
     st.pyplot(plot_totalR)
 
 elif metrique_temps == "Taux d'ouverture":
-    plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps",22.15, 30,60 )
+    plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps",22.15, 0,80 )
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
