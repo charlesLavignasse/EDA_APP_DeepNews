@@ -404,31 +404,17 @@ moy=[moy_joint, moy_others, moy_MN]
 deepnews_part=len(joint)/len(deep_user.EUID)
 monday_part=1-deepnews_part
 
-def piechart_deep_vs_monday():
-
-    fig, ax=plt.subplots()
-    colors=["#ED002F", "#00A779"]
-    labels=["Abonnés à la Monday Note", "Non abonnés à la Monday Note"]
-    plt.pie([deepnews_part, monday_part], explode = [0,0.1], autopct='%1.0f%%', colors=colors, radius = 2, textprops={'fontsize': 22})
-    plt.legend(labels, bbox_to_anchor=(-0.2,.6, 0.5, -0.1), fontsize=18)
-    plt.title("Abonnés à la DeepNewsletter", y=1.8, fontsize=25)
-    plt.tight_layout()
-    # plt.savefig("Abonnés NL MN")
-    # files.download("Abonnés NL MN.png")
-    plt.show()
 
 
-piechart_selection = st.selectbox("Quelle représentation ?:",("Engagement DeepNews","Engagement MondayNote", "Comparatif des deux"))
+piechart_selection = st.selectbox("Quelle représentation ?:",("Engagement DeepNews","Engagement MondayNote"))
 
 if piechart_selection == "Engagement DeepNews":
     pc_deep = piechart_deepnews()
     st.pyplot(pc_deep)
-elif piechart_selection == "Engagement MondayNote":
+else:
     pc_monday = piechart_mondaynote()
     st.pyplot(pc_monday)
-else:
-    pc_vs = piechart_deep_vs_monday()
-    st.pyplot(pc_vs)
+
 
 def engagement_deux_NL():
     fig, ax=plt.subplots(figsize=(8,8))
