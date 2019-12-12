@@ -4,7 +4,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 from matplotlib.ticker import EngFormatter
-sns.set(style="whitegrid")
 
 #on importe nos deux datasets
 
@@ -21,6 +20,8 @@ digest = digest[digest['Send Weekday']=='Friday']
 
 #formattage de la colonne 'Send Date' en datetime
 digest['Send Date'] = pd.to_datetime(digest["Send Date"],format = "%b %d, %Y %H:%M %p")
+#on enlève les données inutiles
+digest.drop([186,191,200,210], inplace = True)
 
 #copie du dataset
 digest_final = digest.copy()
@@ -39,8 +40,7 @@ if st.checkbox('voir le dataset des métriques'):
     nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,15,5)
     st.write(digest_final.head(nombre_lignes_a_visualiser))
 
-#on enlève les données inutiles
-digest.drop([186,191,200,210], inplace = True)
+
 
 
 #création d'une fonction de plotting
@@ -63,7 +63,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
 def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
     fig, axes = plt.subplots(figsize = (15,8))
     ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
-    plt.ylim(0,100)
+    plt.ylim(0,60)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
