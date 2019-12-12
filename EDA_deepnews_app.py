@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 from matplotlib.ticker import EngFormatter
+sns.reset_orig()
 
 #on importe nos deux datasets
 
@@ -60,10 +61,12 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     plt.show()
 
 
-def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name):
+def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus,ymin,ymax):
     fig, axes = plt.subplots(figsize = (15,8))
     ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
-    plt.ylim(0,60)
+    ax1=sns.lineplot(x='Send Date', y=moy_indus, data=digest, linewidth=2.5, c='navy', label="Moyenne de l'industrie")
+
+    plt.ylim(ymin,ymax)
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
@@ -81,6 +84,8 @@ digest["Reactivity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
 def reactivity_plot():
     fig, ax = plt.subplots(figsize = (15,8))
     ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700')
+    ax1=sns.lineplot(x='Send Date', y=20.767494356659142, data=digest, linewidth=2.5, c='navy', label="Moyenne de l'industrie")
+    ax.lines[1].set_linestyle("--")
     ax.legend(fontsize=18)
     plt.ylim(0,40)
     plt.tick_params(axis='both', which='major', labelsize=18)
@@ -112,12 +117,12 @@ if metrique_temps == "Destinataires":
     st.pyplot(plot_totalR)
 
 elif metrique_temps == "Taux d'ouverture":
-    plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps" )
+    plot_OpenR = LinePlotTimePercent('Open Rate', "Taux d'ouverture", digest_final,"Evolution du taux d'ouverture en fonction du temps",22.15, 30,60 )
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
 elif metrique_temps == 'Taux de clics':
-    plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps")
+    plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps",4.6, 0,17)
     st.write("Evolution du taux de clics en fonction du temps")
     st.pyplot(plot_clicR)
 elif metrique_temps == 'Taux de réactivité':
@@ -202,6 +207,7 @@ if st.checkbox("voir le scatterplot"):
     st.pyplot(scat_Uns)
 
 
+
 st.header("Visualisations des subscribers")
 digest_theme['New Subscribers'] = 0
 for i in digest_theme.index:
@@ -237,7 +243,7 @@ def doubleLinePlot():
 doubleplot = doubleLinePlot()
 if st.checkbox("voir le double plot"):
     st.pyplot(doubleplot)
-    sns.reset_orig
+
 
 st.title("III Analyse des répartitions de clics")
 st.header('Représentation des éditeurs en fonction de leur catégorie')
@@ -397,12 +403,30 @@ others=deep_user[~deep_user.EUID.isin(joint.EUID)].dropna()
 moy_others = others["MEMBER_RATING"].mean()
 moy=[moy_joint, moy_others, moy_MN]
 
-
-
-
-
 deepnews_part=len(joint)/len(deep_user.EUID)
 monday_part=1-deepnews_part
+
+def piechart_deep_vs_monday():
+
+    fig, ax=plt.subplots()
+    colors=["#ED002F", "#00A779"]
+    labels=["Abonnés à la Monday Note", "Non abonnés à la Monday Note"]
+    plt.pie([deepnews_part, monday_part], explode = [0,0.1], autopct='%1.0f%%', colors=colors, radius = 2, textprops={'fontsize': 22})
+    plt.legend(labels, bbox_to_anchor=(-0.2,.6, 0.5, -0.1), fontsize=18)
+    plt.title("Abonnés à la DeepNewsletter", y=1.8, fontsize=25)
+    plt.tight_layout()
+    # plt.savefig("Abonnés NL MN")
+    # files.download("Abonnés NL MN.png")
+    plt.show()
+
+if st.checkbox("Voir le pie chart des abonnés vs non abonnés à la monday note"):
+    pie_dvm = piechart_deep_vs_monday()
+    st.pyplot(pie_dvm)
+
+
+
+
+
 
 
 
