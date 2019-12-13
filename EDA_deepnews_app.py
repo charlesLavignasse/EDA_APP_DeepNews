@@ -7,13 +7,15 @@ from matplotlib.ticker import EngFormatter
 sns.reset_orig()
 
 #on importe nos deux datasets
+if st.checkbox('Voir le QR_Code :'):
+    st.image('qr_code.png')
 
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
 digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
 digest_topics = digest_topics.replace("Economy", 'Business')
 #là on crée le titre de la page
-st.title("I Exploration des métriques")
+st.title("Exploration des métriques")
 
 #On selectionne dans notre dataset les données qui nous interessent
 digest = campaigns[campaigns['List']== 'Deepnews Digest']
@@ -63,7 +65,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
 
 def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus,ymin,ymax):
     fig, axes = plt.subplots(figsize = (15,8))
-    ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
+    ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered', label = "DeepNews")
     ax1=sns.lineplot(x='Send Date', y=moy_indus, data=digest, linewidth=2.5, c='navy', label="Moyenne du secteur")
     ax.lines[1].set_linestyle("--")
     plt.ylim(ymin,ymax)
@@ -80,10 +82,10 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus
     plt.title(title_name, fontsize=25)
 
 
-digest["Reactivity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
-def reactivity_plot():
+digest["Reactity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
+def reactity_plot():
     fig, ax = plt.subplots(figsize = (15,8))
-    ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
+    ax=sns.lineplot(x = 'Send Date', y = 'Reactity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
     ax1=sns.lineplot(x='Send Date', y=20.767494356659142, data=digest, linewidth=2.5, c='navy', label="Moyenne du secteur")
     ax.lines[1].set_linestyle("--")
     ax.legend(fontsize=18)
@@ -93,7 +95,7 @@ def reactivity_plot():
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
     plt.xlabel("Date d'envoi",fontsize=20)
-    plt.ylabel('Taux de réactivité',fontsize=20)
+    plt.ylabel('Taux de réactité',fontsize=20)
     plt.xticks(rotation=0)
     plt.title("Evolution du taux de réactivité", fontsize=27)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
@@ -108,7 +110,7 @@ def reactivity_plot():
     plt.show()
 
 #On crée la selectbox pour les métriques
-metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'Taux de clics', 'Total non-délivrés','Taux de réactivité'))
+metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'taux de clic','Taux de réactivité'))
 
 if metrique_temps == "Destinataires":
     #on représente le nombre de receveurs en fonction du temps
@@ -121,20 +123,14 @@ elif metrique_temps == "Taux d'ouverture":
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
-elif metrique_temps == 'Taux de clics':
-    plot_clicR = LinePlotTimePercent('Click Rate','Taux de clics', digest_final,"Evolution du taux de clics en fonction du temps",4.6, 0,17)
-    st.write("Evolution du taux de clics en fonction du temps")
+elif metrique_temps == 'taux de clic':
+    plot_clicR = LinePlotTimePercent('Click Rate','taux de clic', digest_final,"Evolution du taux de clic en fonction du temps",4.6, 0,17)
+    st.write("Evolution du taux de clic en fonction du temps")
     st.pyplot(plot_clicR)
-elif metrique_temps == 'Taux de réactivité':
-    reactivity_plot = reactivity_plot()
-    st.write("Evolution du taux de réactivité")
-    st.pyplot(reactivity_plot)
-
 else :
-    plot_totalBoun = LinePlotTime('Total Bounces', 'Non délivrés', digest_final, "Evolution du nombre de mails non délivrés au cours du temps")
-    st.write("Evolution du nombre de mail non délivrés au cours du temps")
-    st.pyplot(plot_totalBoun)
-
+    reactity_plot = reactity_plot()
+    st.write("Evolution du Taux de réactivité")
+    st.pyplot(reactity_plot)
 
 
 #on intègre les thèmes dans notre jeu de données
@@ -162,23 +158,23 @@ def barplots(parameter, Parameter_name, title_name):
     plt.xticks(rotation=0)
     plt.title(title_name, fontsize=25)
 
-st.title("II Métriques en fonction des thèmes")
+st.title("Métriques en fonction des thèmes")
 if st.checkbox("voir les différents thèmes"):
     st.write(pd.DataFrame(digest_theme["Thème"].value_counts()))
 
 #st.write(digest_theme)
 st.header("Représentation des métriques en fonction du thème de la newsletter")
-barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Taux d'ouverture", "Taux de clics", "Clics uniques"))
+barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Taux d'ouverture", "taux de clic", "Clics uniques"))
 if barTheme == "Taux d'ouverture":
     barplot_openR = barplots('Open Rate', "Taux d'ouverture", "Taux d'ouverture en fonction du thème")
     st.write("Taux d'ouverture en fonction du thème")
     st.pyplot(barplot_openR)
-elif barTheme == "Taux de clics":
-    barplot_ClickR = barplots('Click Rate', "Taux de clics", 'Taux de clics en fonction du thème')
-    st.write("Taux de clics en fonction du thème")
+elif barTheme == "taux de clic":
+    barplot_ClickR = barplots('Click Rate', "taux de clic", 'taux de clic en fonction du thème')
+    st.write("taux de clic en fonction du thème")
     st.pyplot(barplot_ClickR)
 else :
-    barplot_UClick = barplots("Unique Clicks", "Clics uniques", 'Taux de clics uniques en fonction du thème')
+    barplot_UClick = barplots("Unique Clicks", "Clics uniques", 'taux de clic uniques en fonction du thème')
     st.write("Taux de clics en fonction du thème")
     st.pyplot(barplot_UClick)
 
@@ -245,7 +241,7 @@ if st.checkbox("voir le double plot"):
     st.pyplot(doubleplot)
 
 
-st.title("III Analyse des répartitions de clics")
+st.title("Analyse de la répartition de clics")
 
 st.header('Distribution du nombre de clics utilisateurs')
 if st.checkbox("Voir la distribution : "):
@@ -306,7 +302,7 @@ if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
         # Plot the mean clicks
         sns.set_color_codes("colorblind")
         sns.barplot(x="uniq_moy", y=pub_grp_merge_df_small50.index, data=pub_grp_merge_df_small50,label="Moyen", color="g")
-        # Add a legend and informative axis label
+        # Add a legend and informate axis label
         ax.legend(ncol=1, loc="center right", frameon=True, fontsize=16, shadow=2)
         ax.set_xlabel("Nombre de clics")
         sns.despine(left=True, bottom=True)
@@ -339,7 +335,7 @@ if st.checkbox("Voir le graphe des rangs:"):
     st.pyplot(graphe_rank)
 #on travail maintenant sur les abonnés
 
-st.title("IV Analyse de l'audience")
+st.title(" Analyse de l'audience")
 
 st.header("Analyses des abonnés aux newsletter")
 st.write('abonnés DeepNews')
