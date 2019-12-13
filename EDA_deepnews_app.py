@@ -319,7 +319,7 @@ clasement_groupe_data = pd.DataFrame(classement_groupe['Unique_clicks'].sum().so
 st.write("Graphe des rangs:")
 def rank_graphe():
     plt.figure(figsize=(14, 10))
-    ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h')
+    ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h', color = 'firebrick')
     # ax.tick_params(axis='y', which='major', pad=20,length=20)
     plt.xticks(fontsize=19)
     plt.yticks(fontsize=17)
