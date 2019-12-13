@@ -37,9 +37,11 @@ digest_final['Click Rate']=digest_final['Click Rate'].astype('float64')
 
 dateDigest = digest_final["Send Date"]
 
-st.header('voir le dataset des métriques')
-nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,25,5)
-st.write(digest_final.head(nombre_lignes_a_visualiser))
+
+
+if st.checkbox('voir le dataset des métriques'):
+    nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,25,5)
+    st.write(digest_final.head(nombre_lignes_a_visualiser))
 
 
 
@@ -198,8 +200,8 @@ def scatterthing(x, y, hue,xlabel,ylabel, title):
 
 scat_Uns = scatterthing(digest_theme["Unsubscribes"],digest_theme['Title'],digest_theme['Thème'],"Unsubscribers",'Digest issue',"Unsubscribers by digest by thème" )
 
-st.header("voir le scatterplot")
-st.pyplot(scat_Uns)
+if st.checkbox("voir le scatterplot"):
+    st.pyplot(scat_Uns)
 
 
 
@@ -236,16 +238,16 @@ def doubleLinePlot():
 
 
 doubleplot = doubleLinePlot()
-st.header("voir le double plot")
-st.pyplot(doubleplot)
+if st.checkbox("voir le double plot"):
+    st.pyplot(doubleplot)
 
 
 st.title("Analyse de la répartition de clics")
 
 st.header('Distribution du nombre de clics utilisateurs')
-st.write("Voir la distribution : ")
-st.image('clic_user.png')
-st.image('clic_user_zoom.png')
+if st.checkbox("Voir la distribution : "):
+    st.image('clic_user.png')
+    st.image('clic_user_zoom.png')
 
 
 st.header('Représentation des éditeurs en fonction de leur catégorie')
@@ -254,19 +256,19 @@ publisher = pd.read_csv("publisher.csv")
 publisher = publisher.drop(columns=['Unnamed: 0', 'url'])
 publisher_group = publisher.groupby(by = "publisher").sum().sort_values(by = 'total_clicks', ascending = False).reset_index()
 publisher_category = pd.merge(publisher_group, category, on = "publisher")
-st.write('Graphe des éditeurs en fonction des clics utilisateurs : ')
-nombre_publisher_slider = st.slider("Choisir le nombre d'éditeurs à visualiser :", 0,100,20)
-def publi_cat():
-    fig, ax = plt.subplots(figsize= (15, 5))
-    sns.barplot(x = 'total_clicks', y = "publisher", data = publisher_category.head(nombre_publisher_slider),hue='category', dodge = False)
-    plt.xticks(fontsize=19)
-    plt.yticks(fontsize=17)
-    plt.xlabel("Nombre de clics total", fontsize=24)
-    plt.ylabel("Editeur", fontsize=26)
-    plt.title("Nombre total de clics par editeur", fontsize=28)
-    plt.show()
-publisher_car_plot = publi_cat()
-st.pyplot(publisher_car_plot)
+if st.checkbox('Voir le graphe : '):
+    nombre_publisher_slider = st.slider("Choisir le nombre d'éditeurs à visualiser :", 0,100,20)
+    def publi_cat():
+        fig, ax = plt.subplots(figsize= (15, 5))
+        sns.barplot(x = 'total_clicks', y = "publisher", data = publisher_category.head(nombre_publisher_slider),hue='category', dodge = False)
+        plt.xticks(fontsize=19)
+        plt.yticks(fontsize=17)
+        plt.xlabel("Nombre de clics total", fontsize=24)
+        plt.ylabel("Editeur", fontsize=26)
+        plt.title("Nombre total de clics par editeur", fontsize=28)
+        plt.show()
+    publisher_car_plot = publi_cat()
+    st.pyplot(publisher_car_plot)
 
 
 
@@ -287,50 +289,51 @@ pub_grp_merge_df = pub_grp_sum_df.join(pub_grp_mean_df)
 pub_grp_merge_df.uniq_moy = pub_grp_merge_df.uniq_moy.round(2)
 
 
-st.write('Nombre de clics pour les éditeurs les plus cliqués')
-nombre_utilisateurs_unique_slide = st.slider("Nombre de journaux à représenter", 0,100,50)
-pub_grp_merge_df_small50 = pub_grp_merge_df.head(nombre_utilisateurs_unique_slide )
+if st.checkbox('Voir le nombre de clics pour les éditeurs les plus cliqués'):
+    nombre_utilisateurs_unique_slide = st.slider("Nombre de journaux à représenter", 0,100,50)
+    pub_grp_merge_df_small50 = pub_grp_merge_df.head(nombre_utilisateurs_unique_slide )
 
-def clics_editeurs():
-    # Initialize the matplotlib figure
-    f, ax = plt.subplots(figsize=(10, 11))
-    # Plot the total clicks
-    sns.set_color_codes("pastel")
-    sns.barplot(x="uniq_tt", y=pub_grp_merge_df_small50.index, data=pub_grp_merge_df_small50,
-                label="Total", color="g")
-    # Plot the mean clicks
-    sns.set_color_codes("colorblind")
-    sns.barplot(x="uniq_moy", y=pub_grp_merge_df_small50.index, data=pub_grp_merge_df_small50,label="Moyen", color="g")
-    # Add a legend and informate axis label
-    ax.legend(ncol=1, loc="center right", frameon=True, fontsize=16, shadow=2)
-    ax.set_xlabel("Nombre de clics")
-    sns.despine(left=True, bottom=True)
-    plt.title("Nombre de clics (moyen, total) par éditeur", fontdict={'fontsize': 18})
-    plt.tight_layout()
-st.pyplot(clicsEdi = clics_editeurs())
-
-
+    def clics_editeurs():
+        # Initialize the matplotlib figure
+        f, ax = plt.subplots(figsize=(10, 11))
+        # Plot the total clicks
+        sns.set_color_codes("pastel")
+        sns.barplot(x="uniq_tt", y=pub_grp_merge_df_small50.index, data=pub_grp_merge_df_small50,
+                    label="Total", color="g")
+        # Plot the mean clicks
+        sns.set_color_codes("colorblind")
+        sns.barplot(x="uniq_moy", y=pub_grp_merge_df_small50.index, data=pub_grp_merge_df_small50,label="Moyen", color="g")
+        # Add a legend and informate axis label
+        ax.legend(ncol=1, loc="center right", frameon=True, fontsize=16, shadow=2)
+        ax.set_xlabel("Nombre de clics")
+        sns.despine(left=True, bottom=True)
+        plt.title("Nombre de clics (moyen, total) par éditeur", fontdict={'fontsize': 18})
+        plt.tight_layout()
+    st.pyplot(clicsEdi = clics_editeurs())
+    if st.checkbox("Voir les commentaires"):
+        st.write("on peut voir ici que le newyorktimes est plus cliqué que les autres, mais simplement parce qu'il est plus présent")
+        st.write("manchester evening a été très cliqué, mais n'est paru qu'une seule fois dans les newsletter ")
 
 st.header("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
 classement = pd.read_csv("rank_data.csv")
 classement_groupe = classement.groupby(by = 'Ranking')
 clasement_groupe_data = pd.DataFrame(classement_groupe['Unique_clicks'].sum().sort_values(ascending=False))
 
-st.write("Graphe des rangs:")
-def rank_graphe():
-    plt.figure(figsize=(14, 10))
-    ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h')
-    # ax.tick_params(axis='y', which='major', pad=20,length=20)
-    plt.xticks(fontsize=19)
-    plt.yticks(fontsize=17)
-    plt.xlabel("Nombre de clics uniques", fontsize=24)
-    plt.ylabel("Positionnement dans la Newsletter", fontsize=26)
-    plt.title("Nombre total de clics uniques par position dans la newsletter", fontsize=28)
-    # plt.tight_layout()
-    # plt.savefig("nb_clics_rank_v3.png", dpi=200)
-    plt.show()
-graphe_rank = rank_graphe()
-st.pyplot(graphe_rank)
+if st.checkbox("Voir le graphe des rangs:"):
+    def rank_graphe():
+        plt.figure(figsize=(14, 10))
+        ax = sns.barplot("Unique_clicks", clasement_groupe_data.index, data=clasement_groupe_data, orient='h')
+        # ax.tick_params(axis='y', which='major', pad=20,length=20)
+        plt.xticks(fontsize=19)
+        plt.yticks(fontsize=17)
+        plt.xlabel("Nombre de clics uniques", fontsize=24)
+        plt.ylabel("Positionnement dans la Newsletter", fontsize=26)
+        plt.title("Nombre total de clics uniques par position dans la newsletter", fontsize=28)
+        # plt.tight_layout()
+        # plt.savefig("nb_clics_rank_v3.png", dpi=200)
+        plt.show()
+    graphe_rank = rank_graphe()
+    st.pyplot(graphe_rank)
 #on travail maintenant sur les abonnés
 
 st.title(" Analyse de l'audience")
@@ -365,8 +368,8 @@ st.write('abonnés MondayNote')
 
 monday_users = pd.read_csv('monday_users.csv')
 
-st.header("Table des abonnés de la MondayNote")
-st.write(monday_users)
+if st.checkbox("Voir la table des abonnés de la MondayNote"):
+    st.write(monday_users)
 
 st.write("Quelle est la proportion d'abonnés inscrits sur les deux newsletter ?")
 
@@ -420,9 +423,9 @@ def piechart_deep_vs_monday():
     # files.download("Abonnés NL MN.png")
     plt.show()
 
-st.write("Voir le pie chart des abonnés vs non abonnés à la monday note")
-pie_dvm = piechart_deep_vs_monday()
-st.pyplot(pie_dvm)
+if st.checkbox("Voir le pie chart des abonnés vs non abonnés à la monday note"):
+    pie_dvm = piechart_deep_vs_monday()
+    st.pyplot(pie_dvm)
 
 
 
@@ -458,11 +461,11 @@ def engagement_deux_NL():
     plt.yticks(fontsize=18)
     plt.tight_layout()
     plt.show()
-st.write("Voir l'engagement moyen des abonnés en fonction de la newsletter")
-engagement = engagement_deux_NL()
-st.pyplot(engagement)
-if st.checkbox('voir commentaires'):
-    st.write("L'engaement moyen est plus important pour DeepNews que pour la mondaynote")
+if st.checkbox("Voir l'engagement moyen des abonnés en fonction de la newsletter"):
+    engagement = engagement_deux_NL()
+    st.pyplot(engagement)
+    if st.checkbox('voir commentaires'):
+        st.write("L'engaement moyen est plus important pour DeepNews que pour la mondaynote")
 
 st.header("Représentation des clics utilisateurs en fonction du thème de la newsletter")
 
