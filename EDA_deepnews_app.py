@@ -366,7 +366,7 @@ st.write('abonnés MondayNote')
 monday_users = pd.read_csv('monday_users.csv')
 
 if st.checkbox("Table des abonnés de la MondayNote"):
-st.write(monday_users)
+    st.write(monday_users)
 
 st.write("Quelle est la proportion d'abonnés inscrits sur les deux newsletter ?")
 
