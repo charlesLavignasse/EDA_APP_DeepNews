@@ -83,6 +83,7 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus
 
 
 digest["Reactity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
+
 def reactity_plot():
     fig, ax = plt.subplots(figsize = (15,8))
     ax=sns.lineplot(x = 'Send Date', y = 'Reactity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
@@ -110,7 +111,7 @@ def reactity_plot():
     plt.show()
 
 #On crée la selectbox pour les métriques
-metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'taux de clic','Taux de réactivité'))
+metrique_temps = st.selectbox('Quelle métrique veux-tu représenter',("Destinataires","Taux d'ouverture", 'Taux de clic','Taux de réactivité'))
 
 if metrique_temps == "Destinataires":
     #on représente le nombre de receveurs en fonction du temps
@@ -123,7 +124,7 @@ elif metrique_temps == "Taux d'ouverture":
     st.write("Evolution du taux d'ouverture")
     st.pyplot(plot_OpenR)
 
-elif metrique_temps == 'taux de clic':
+elif metrique_temps == 'Taux de clic':
     plot_clicR = LinePlotTimePercent('Click Rate','taux de clic', digest_final,"Evolution du taux de clic en fonction du temps",4.6, 0,17)
     st.write("Evolution du taux de clic en fonction du temps")
     st.pyplot(plot_clicR)
