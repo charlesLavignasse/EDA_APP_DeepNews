@@ -6,15 +6,20 @@ import streamlit as st
 from matplotlib.ticker import EngFormatter
 sns.reset_orig()
 
-#on importe nos deux datasets
+#Affichage de QR CODE pour les gens souhaitant accéder au site
 if st.checkbox('Voir le QR_Code :'):
     st.image('qr_code.png')
 
+#on charge le fichier contant toutes les données de digest
 campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
 
+
+#on charge le jeu de données qui regroupe les thèmes de chaque digest
 digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
 digest_topics = digest_topics.replace("Economy", 'Business')
 #là on crée le titre de la page
+
+#la fonction st.title permet de crée un titre
 st.title("Exploration des métriques")
 
 #On selectionne dans notre dataset les données qui nous interessent
@@ -28,24 +33,30 @@ digest.drop([186,191,200,210], inplace = True)
 
 #copie du dataset
 digest_final = digest.copy()
+
+#on retire les pourcentages de nos colonnes
 mylambda= lambda x: x.strip('%')
 digest_final['Click Rate']=digest_final['Click Rate'].apply(mylambda)
 digest_final['Open Rate']=digest_final['Open Rate'].apply(mylambda)
 digest_final['Open Rate']=digest_final['Open Rate'].astype('float64')
 digest_final['Click Rate']=digest_final['Click Rate'].astype('float64')
 
-
+#on créé une variable qui va contenir les dates de notre digest
 dateDigest = digest_final["Send Date"]
 
+#la fonction st.header permet d'afficher des sous-titres
 st.header('voir le dataset des métriques')
+
+#on crée un slider qui nous permet de choisir le nombre de lignes que l'on veut visualiser
 nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,25,5)
+
+#on montre le jeu de données en foncction du nombre de lignes choisies par le slider
 st.write(digest_final.head(nombre_lignes_a_visualiser))
 
 
 
 
-#création d'une fonction de plotting
-
+#Fonction qui nous sert à plot les métriques non représentées en pourcentages
 def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     fig, axes = plt.subplots(figsize = (15,8))
     sns.lineplot(x = dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
@@ -60,7 +71,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
     plt.title(title_name, fontsize=25)
     plt.show()
 
-
+#Fonction qui nous sert à plot les métriques représentées en pourcentages
 def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus,ymin,ymax):
     fig, axes = plt.subplots(figsize = (15,8))
     ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered', label = "DeepNews")
@@ -79,12 +90,14 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus
     plt.xticks(rotation=30)
     plt.title(title_name, fontsize=25)
 
+#on crée une nouvelle colonne "reactivity rate" qui prend en compte le nombre de clics uniques divisés par les ouvertures uniques
+digest["Reactivity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
 
-digest["Reactity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
 
-def reactity_plot():
+#à recoder
+def reactivity_plot():
     fig, ax = plt.subplots(figsize = (15,8))
-    ax=sns.lineplot(x = 'Send Date', y = 'Reactity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
+    ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
     ax1=sns.lineplot(x='Send Date', y=20.767494356659142, data=digest, linewidth=2.5, c='navy', label="Moyenne du secteur")
     ax.lines[1].set_linestyle("--")
     ax.legend(fontsize=18)
@@ -94,7 +107,7 @@ def reactity_plot():
     formatter0 = EngFormatter(unit='%')
     ax.yaxis.set_major_formatter(formatter0)
     plt.xlabel("Date d'envoi",fontsize=20)
-    plt.ylabel('Taux de réactité',fontsize=20)
+    plt.ylabel('Taux de réactivité',fontsize=20)
     plt.xticks(rotation=0)
     plt.title("Evolution du taux de réactivité", fontsize=27)
     x_label_list = ['Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
@@ -103,9 +116,6 @@ def reactity_plot():
     plt.xlim(xmin=("2019-06-15"))
 
     plt.tight_layout()
-    #pour le chargement des graphiques sur l'ordinateur
-    # plt.savefig("click_rate.png")
-    # files.download("click_rate.png")
     plt.show()
 
 #On crée la selectbox pour les métriques
@@ -133,7 +143,6 @@ else :
 
 
 #on intègre les thèmes dans notre jeu de données
-dateDigest = digest_final["Send Date"]
 digest_final = digest_final.reset_index(drop = True)
 digest_final = digest_final.drop([0,1,2,3])
 digest_final = digest_final.reset_index(drop= True)
@@ -145,6 +154,7 @@ theme = digest_theme["Thème"]
 
 
 
+#création de la fonction qui permet de créer des barplots
 def barplots(parameter, Parameter_name, title_name):
     fig, ax = plt.subplots(figsize = (20, 7))
     sns.barplot(x = theme, y = parameter, data = digest_theme )
@@ -157,11 +167,13 @@ def barplots(parameter, Parameter_name, title_name):
     plt.xticks(rotation=0)
     plt.title(title_name, fontsize=25)
 
+
 st.title("Métriques en fonction des thèmes")
+
 if st.checkbox("voir les différents thèmes"):
     st.write(pd.DataFrame(digest_theme["Thème"].value_counts()))
 
-#st.write(digest_theme)
+
 st.header("Représentation des métriques en fonction du thème de la newsletter")
 barTheme = st.selectbox("Quelle métrique veux-tu représenter ?", ("Taux d'ouverture", "taux de clic", "Clics uniques"))
 if barTheme == "Taux d'ouverture":
@@ -181,14 +193,13 @@ else :
 
 st.header("Représentation des désinscriptions en fonction du thème et de la newsletter")
 
+#création d'un scatterplot qui permet de représenter les métriques en fonction du thèmes et du numéro de la digest
 def scatterthing(x, y, hue,xlabel,ylabel, title):
     fig, ax = plt.subplots(figsize=(20,10))
+
     sns.scatterplot(digest_theme["Unsubscribes"].sort_values(),digest_theme['Title'], hue = digest_theme['Thème'], s = 300 )
 
-    # plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
-    # formatter0 = EngFormatter(unit='%')
-    # ax.yaxis.set_major_formatter(formatter0)
     plt.xlabel(xlabel,fontsize=20)
     plt.ylabel(ylabel,fontsize=20)
     plt.xticks(fontsize = 17)
@@ -196,14 +207,15 @@ def scatterthing(x, y, hue,xlabel,ylabel, title):
     plt.legend(fontsize = 15)
     plt.tight_layout()
 
-scat_Uns = scatterthing(digest_theme["Unsubscribes"],digest_theme['Title'],digest_theme['Thème'],"Unsubscribers",'Digest issue',"Unsubscribers by digest by thème" )
-
 st.header("voir le scatterplot")
+scat_Uns = scatterthing(digest_theme["Unsubscribes"],digest_theme['Title'],digest_theme['Thème'],"Unsubscribers",'Digest issue',"Unsubscribers by digest by thème" )
 st.pyplot(scat_Uns)
 
 
 
 st.header("Visualisations des subscribers")
+
+#calculs des nouveaux subscribers
 digest_theme['New Subscribers'] = 0
 for i in digest_theme.index:
   if i == 0:
@@ -216,6 +228,7 @@ for i in digest_theme.index:
 #Unsuscribers = digest_theme_complete['Unsubscribes']
 #Theme = digest_theme_complete['Thème']
 
+#fonction qui représente les abonnés et les désabonnés
 def doubleLinePlot():
     fig, axes = plt.subplots(2,1, figsize = (20, 10),)
 
@@ -233,14 +246,13 @@ def doubleLinePlot():
 
     plt.tight_layout()
 
-
-
 doubleplot = doubleLinePlot()
 st.header("voir le double plot")
 st.pyplot(doubleplot)
 
 
 st.title("Analyse de la répartition de clics")
+
 
 st.header('Distribution du nombre de clics utilisateurs')
 st.write("Voir la distribution : ")
@@ -249,13 +261,30 @@ st.image('clic_user_zoom.png')
 
 
 st.header('Représentation des éditeurs en fonction de leur catégorie')
+
+#on charge le fichier des catégories
 category = pd.read_csv("publishers_list.csv", sep = ";")
+
+#Fichier des éditeurs
 publisher = pd.read_csv("publisher.csv")
+
 publisher = publisher.drop(columns=['Unnamed: 0', 'url'])
+
+#on regroupe en fonction des éditeurs, et on trie en fonction du nombre total de cliques
 publisher_group = publisher.groupby(by = "publisher").sum().sort_values(by = 'total_clicks', ascending = False).reset_index()
+
+#on merge les deux jeux de données sur les éditeurs en commun
 publisher_category = pd.merge(publisher_group, category, on = "publisher")
+
+
 st.write('Graphe des éditeurs en fonction des clics utilisateurs : ')
+
+#slider qui permet de choisir le nombre d'éditeurs à visualiser
 nombre_publisher_slider = st.slider("Choisir le nombre d'éditeurs à visualiser :", 0,100,20)
+
+#if.checkbox("voir la table de données des ")
+
+#on crée le graphe des catégories d'éditeurs
 def publi_cat():
     fig, ax = plt.subplots(figsize= (15, 5))
     sns.barplot(x = 'total_clicks', y = "publisher", data = publisher_category.head(nombre_publisher_slider),hue='category', dodge = False)
