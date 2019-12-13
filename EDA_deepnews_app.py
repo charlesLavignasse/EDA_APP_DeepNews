@@ -38,7 +38,7 @@ dateDigest = digest_final["Send Date"]
 
 
 if st.checkbox('voir le dataset des métriques'):
-    nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,15,5)
+    nombre_lignes_a_visualiser = st.slider("Nombre de lignes à  visualiser",0,25,5)
     st.write(digest_final.head(nombre_lignes_a_visualiser))
 
 
@@ -64,7 +64,7 @@ def LinePlotTime(parameter, Parameter_name, dataset, title_name):
 def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus,ymin,ymax):
     fig, axes = plt.subplots(figsize = (15,8))
     ax = sns.lineplot(x= dateDigest, y = parameter, data = dataset, linewidth=4, c='orangered')
-    ax1=sns.lineplot(x='Send Date', y=moy_indus, data=digest, linewidth=2.5, c='navy', label="Moyenne de l'industrie")
+    ax1=sns.lineplot(x='Send Date', y=moy_indus, data=digest, linewidth=2.5, c='navy', label="Moyenne du secteur")
     ax.lines[1].set_linestyle("--")
     plt.ylim(ymin,ymax)
     formatter0 = EngFormatter(unit='%')
@@ -83,8 +83,8 @@ def LinePlotTimePercent(parameter, Parameter_name, dataset, title_name,moy_indus
 digest["Reactivity Rate"]= digest["Unique Clicks"]*100/digest["Unique Opens"]
 def reactivity_plot():
     fig, ax = plt.subplots(figsize = (15,8))
-    ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700')
-    ax1=sns.lineplot(x='Send Date', y=20.767494356659142, data=digest, linewidth=2.5, c='navy', label="Moyenne de l'industrie")
+    ax=sns.lineplot(x = 'Send Date', y = 'Reactivity Rate', data = digest, linewidth=4, c='#FF0700', label = "DeepNews")
+    ax1=sns.lineplot(x='Send Date', y=20.767494356659142, data=digest, linewidth=2.5, c='navy', label="Moyenne du secteur")
     ax.lines[1].set_linestyle("--")
     ax.legend(fontsize=18)
     plt.ylim(0,40)
@@ -246,6 +246,13 @@ if st.checkbox("voir le double plot"):
 
 
 st.title("III Analyse des répartitions de clics")
+
+st.header('Distribution du nombre de clics utilisateurs')
+if st.checkbox("Voir la distribution : "):
+    st.image('clic_user.png')
+    st.image('clic_user_zoom.png')
+
+
 st.header('Représentation des éditeurs en fonction de leur catégorie')
 category = pd.read_csv("publishers_list.csv", sep = ";")
 publisher = pd.read_csv("publisher.csv")
