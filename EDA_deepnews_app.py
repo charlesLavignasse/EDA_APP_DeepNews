@@ -7,10 +7,8 @@ from matplotlib.ticker import EngFormatter
 import base64
 sns.reset_orig()
 
-chemin_Data = "C:\\Users\\Charles\\Documents\\GitHub\\EDA_APP_DeepNews - Copie\\Data\\"
+chemin_Data = "EDA_APP_DeepNews/Data/"
 
-##doesn't work 
-#chemin_Img = "C:\\Users\\Charles\\Documents\\GitHub\\EDA_APP_DeepNews - Copie\\Images\\"
 
 #Affichage de QR CODE pour les gens souhaitant accéder au site
 if st.checkbox('Voir le QR_Code :'):
