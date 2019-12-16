@@ -4,18 +4,24 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
 from matplotlib.ticker import EngFormatter
+import base64
 sns.reset_orig()
+
+chemin_Data = "C:\\Users\\Charles\\Documents\\GitHub\\EDA_APP_DeepNews - Copie\\Data\\"
+
+##doesn't work 
+#chemin_Img = "C:\\Users\\Charles\\Documents\\GitHub\\EDA_APP_DeepNews - Copie\\Images\\"
 
 #Affichage de QR CODE pour les gens souhaitant accéder au site
 if st.checkbox('Voir le QR_Code :'):
     st.image('qr_code.png')
 
 #on charge le fichier contant toutes les données de digest
-campaigns = pd.read_csv("campaigns.csv",error_bad_lines=False)
+campaigns = pd.read_csv(chemin_Data + "campaigns.csv",error_bad_lines=False)
 
 
 #on charge le jeu de données qui regroupe les thèmes de chaque digest
-digest_topics = pd.read_csv("Digest Topic.csv",error_bad_lines=False)
+digest_topics = pd.read_csv(chemin_Data + "Digest Topic.csv",error_bad_lines=False)
 digest_topics = digest_topics.replace("Economy", 'Business')
 #là on crée le titre de la page
 
@@ -260,13 +266,14 @@ st.image('clic_user.png')
 st.image('clic_user_zoom.png')
 
 
+
 st.header('Représentation des éditeurs en fonction de leur catégorie')
 
 #on charge le fichier des catégories
-category = pd.read_csv("publishers_list.csv", sep = ";")
+category = pd.read_csv(chemin_Data + "publishers_list.csv", sep = ";")
 
 #Fichier des éditeurs
-publisher = pd.read_csv("publisher.csv")
+publisher = pd.read_csv(chemin_Data + "publisher.csv")
 
 publisher = publisher.drop(columns=['Unnamed: 0', 'url'])
 
@@ -301,11 +308,14 @@ st.pyplot(publisher_car_plot)
 
 
 st.header("Clics par éditeurs")
-pub_df = pd.read_csv("reports_data.csv")
+
+#chargement du jeu de données sur les clics des editeurs
+pub_df = pd.read_csv(chemin_Data + "reports_data.csv")
+
+#on regroupe les données par les éditeurs
 pub_grp_sr = pub_df.groupby(["publisher"])
 
-pub_grp_df = pd.DataFrame(pub_grp_sr['unique_clicks'].sum().sort_values(ascending=False))
-pub_grp_sum_df = pub_grp_df
+pub_grp_sum_df = pd.DataFrame(pub_grp_sr['unique_clicks'].sum().sort_values(ascending=False))
 pub_grp_sum_df.columns = ['uniq_tt']
 
 pub_grp_mean_df = pd.DataFrame(pub_grp_sr['unique_clicks'].mean().sort_values(ascending=False))
@@ -317,10 +327,14 @@ pub_grp_merge_df.uniq_moy = pub_grp_merge_df.uniq_moy.round(2)
 
 
 st.write('Nombre de clics pour les éditeurs les plus cliqués')
+
+#slider  pour le nobmre d'éditeurs
 nombre_utilisateurs_unique_slide = st.slider("Nombre de journaux à représenter", 0,100,50)
 pub_grp_merge_df_small50 = pub_grp_merge_df.head(nombre_utilisateurs_unique_slide )
 
+#fonction pour représenter graphiquement le nombre de clics total et moyen par editeurs
 def clics_editeurs():
+    #code Sebastien Jouest
     # Initialize the matplotlib figure
     f, ax = plt.subplots(figsize=(10, 11))
     # Plot the total clicks
@@ -341,7 +355,7 @@ st.pyplot(clicsEdi = clics_editeurs())
 
 
 st.header("Nombre de clics des liens de la NewsLetter en fonction de leur position dans la newsletter")
-classement = pd.read_csv("rank_data.csv")
+classement = pd.read_csv(chemin_Data + "rank_data.csv")
 classement_groupe = classement.groupby(by = 'Ranking')
 clasement_groupe_data = pd.DataFrame(classement_groupe['Unique_clicks'].sum().sort_values(ascending=False))
 
@@ -363,19 +377,20 @@ st.pyplot(graphe_rank)
 #on travail maintenant sur les abonnés
 
 st.title(" Analyse de l'audience")
-
+#Traitement des données et graphes par Agathe Simon
 st.header("Analyses des abonnés aux newsletter")
 st.write('abonnés DeepNews')
 
-deep_users = pd.read_csv("deep_users.csv")
+deep_users = pd.read_csv(chemin_Data + "deep_users.csv")
 if st.checkbox("voir la table des abonnés Deepnews"):
     st.write(deep_users)
 
+#Calucl des pourcentages d'utilisateuurs en fonction de leur note Mailchimp
 Percentage_deep_users= deep_users.groupby(deep_users['MEMBER_RATING']).size()/len(deep_users['MEMBER_RATING'])*100
 Rating_proportion_deep_users = pd.DataFrame({"Percentage": Percentage_deep_users})
 Rating_proportion_deep_users.drop([1.0], inplace=True)
 
-
+#Fonction qui créée le piechart des abonnés DeepNews
 def piechart_deepnews():
     ax, fig= plt.subplots(figsize=(9,9))
     labels=["Aucun","Faible","Modéré","Elevé"]
@@ -392,7 +407,7 @@ def piechart_deepnews():
 
 st.write('abonnés MondayNote')
 
-monday_users = pd.read_csv('monday_users.csv')
+monday_users = pd.read_csv(chemin_Data + 'monday_users.csv')
 
 if st.checkbox("Table des abonnés de la MondayNote"):
     st.write(monday_users)
@@ -416,16 +431,28 @@ def piechart_mondaynote():
     # files.download("rating_subscribers.png")
     plt.show()
 
+#on sélectionne les colonnes qui nous intéressent
 monday_user = monday_users[["LEID","EUID","MEMBER_RATING"]]
 deep_user = deep_users[["LEID","EUID","MEMBER_RATING"]]
 
+#on fusionne les tables en fonction de l'EUID qui est l'identifiant utilisateur universel (propre à toutes les campagnes) de Mailchimp
 joint = pd.merge(monday_user,deep_user, on = "EUID")
+
+#on représente dans un encadré vert le nombre d'abonnés en commun entre les deux newsletter
 st.success(len(joint))
+
+#on renomme les columns du dataframe join pour qu'elles soient plus explicites
 joint.rename(columns={"MEMBER_RATING_x": "Score MN", "LEID_x": "LEID MN", "MEMBER_RATING_y": "Score DN", "LEID_y": "LEID DN"}, inplace=True)
+
+#On fait la moyenne des notes des abonnés DeepNews
 moy_joint=joint["Score DN"].mean()
 
+#on sélectionne la part des abonnés MondayNote présente dans le join avec DeepNews
 others_MN = monday_user[~monday_user.EUID.isin(joint.EUID)].dropna()
+
+#Moyenne des notes des abonnés Monday NotE
 moy_MN=others_MN["MEMBER_RATING"].mean()
+
 
 moy_deep=deep_user["MEMBER_RATING"].mean()
 others=deep_user[~deep_user.EUID.isin(joint.EUID)].dropna()
@@ -452,13 +479,6 @@ def piechart_deep_vs_monday():
 st.write("Voir le pie chart des abonnés vs non abonnés à la monday note")
 pie_dvm = piechart_deep_vs_monday()
 st.pyplot(pie_dvm)
-
-
-
-
-
-
-
 
 piechart_selection = st.selectbox("Quelle représentation ?:",("Engagement DeepNews","Engagement MondayNote"))
 
@@ -487,6 +507,8 @@ def engagement_deux_NL():
     plt.yticks(fontsize=18)
     plt.tight_layout()
     plt.show()
+
+
 st.write("Voir l'engagement moyen des abonnés en fonction de la newsletter")
 engagement = engagement_deux_NL()
 st.pyplot(engagement)
@@ -495,16 +517,27 @@ if st.checkbox('voir commentaires'):
 
 st.header("Représentation des clics utilisateurs en fonction du thème de la newsletter")
 
-theme = pd.read_csv('Digest Topic.csv')
+
+theme = pd.read_csv(chemin_Data + 'Digest Topic.csv')
 theme.rename(columns={'Digest number':'digest'}, inplace=True)
-clics = pd.read_csv('User_Clicks_Digest.csv')
+clics = pd.read_csv(chemin_Data + 'User_Clicks_Digest.csv')
 clicks_theme = pd.merge(clics, theme, how = 'right',  on='digest' )
 clicks_theme= clicks_theme[["EUID",'Thème',"Clicks"]]
 clicks_theme_grouped = clicks_theme.groupby(by = ['EUID','Thème']).sum().sort_values('Clicks', ascending = False).reset_index()
 
+###création d'un fichier csv téléchargeable
+##Il y a surement possibilité de créer une fonction qui automatise le processus
+#on exporte le csv dans un vecteur
+clicks_theme_grouped_csv = clicks_theme_grouped.to_csv(index=False)
+
+if st.checkbox("afficher le téléchargement du csv des thèmes en fonction des clics utilisateurs"):
+    b64 = base64.b64encode(clicks_theme_grouped_csv.encode()).decode()  # some strings <-> bytes conversions necessary here
+    href = f'<a href="data:file/csv;base64,{b64}">Download CSV File</a> (right-click and save as &lt;clics_themes_user;.csv)'
+    st.markdown(href, unsafe_allow_html=True)
 
 nombre_utilisateurs_slide = st.slider("nombre d'utilisateurs à représenter",0,100,50)
 clicks_theme_grouped_slide = clicks_theme_grouped.head(nombre_utilisateurs_slide)
+
 
 def clics_par_theme():
     fig, ax = plt.subplots(figsize = ( 20,10 ))
@@ -515,4 +548,10 @@ def clics_par_theme():
     plt.ylabel('Nombre de clics utilisateur', fontsize=18)
 
 clics_theme_uti = clics_par_theme()
+
 st.pyplot(clics_theme_uti)
+
+#clicks_theme_grouped_csv = clicks_theme_grouped.to_csv(index=False)
+#b64 = base64.b64encode(clicks_theme_grouped_csv.encode()).decode()  # some strings <-> bytes conversions necessary here
+#href = f'<a href="data:file/csv;base64,{b64}">Download CSV File</a> (right-click and save as &lt;some_name&gt;.csv)'
+#st.markdown(href, unsafe_allow_html=True)
