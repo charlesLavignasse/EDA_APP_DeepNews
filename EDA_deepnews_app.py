@@ -7,7 +7,7 @@ from matplotlib.ticker import EngFormatter
 import base64
 sns.reset_orig()
 
-chemin_Data = "EDA_APP_DeepNews/Data/"
+chemin_Data = "/app/Data/"
 
 
 #Affichage de QR CODE pour les gens souhaitant accéder au site
