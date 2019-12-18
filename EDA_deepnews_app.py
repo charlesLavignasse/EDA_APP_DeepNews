@@ -541,9 +541,15 @@ def clics_par_theme():
     fig, ax = plt.subplots(figsize = ( 20,10 ))
     sns.barplot(x="EUID", y='Clicks',hue="Thème", data = clicks_theme_grouped_slide, dodge = False)
     plt.legend(loc = 'upper center', fontsize = 18)
-    plt.xticks(rotation = 45)
-    plt.xlabel('Identifiant uttilisateur', fontsize=18)
-    plt.ylabel('Nombre de clics utilisateur', fontsize=18)
+    
+    plt.xticks(rotation = 45) 
+    
+    plt.xlabel('Identifiant uttilisateur', fontsize=22)
+    plt.ylabel('Nombre de clics utilisateur', fontsize=22)
+    
+    plt.tick_params(axis='both', which='major', labelsize=19)
+    plt.tick_params(axis='both', which='minor', labelsize=19)
+    plt.title(title_name, fontsize=25)
 
 clics_theme_uti = clics_par_theme()
 
