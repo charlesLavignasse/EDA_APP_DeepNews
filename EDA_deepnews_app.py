@@ -549,7 +549,7 @@ def clics_par_theme():
     
     plt.tick_params(axis='both', which='major', labelsize=19)
     plt.tick_params(axis='both', which='minor', labelsize=19)
-    plt.title(title_name, fontsize=25)
+   
 
 clics_theme_uti = clics_par_theme()
 
